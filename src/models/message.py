@@ -13,7 +13,7 @@ from . import Base
 
 class MessageTable(Base):
     __tablename__ = 'messages'
-    
+
     id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
     conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id"))
     sender = mapped_column(Enum("user", "bot"), name="sender")

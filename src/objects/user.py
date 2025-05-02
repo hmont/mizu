@@ -26,25 +26,25 @@ async def create(
         password_hash=password_hash,
         openai_api_key=openai_api_key
     )
-    
+
     await database.execute(query)
-    
+
 async def fetch_one(
     id: Optional[int] = None,
     username: Optional[str] = None
 ) -> Optional[User]:
     if not any((id, username)):
         raise ValueError("Either id or username must be provided.")
-    
+
     stmt = select(UsersTable)
-    
+
     if id:
         stmt = stmt.where(UsersTable.id == id)
     else:
         stmt = stmt.where(UsersTable.username == username)
-        
+
     user = await database.fetch_one(stmt)
-    
+
     return cast(User, user) if user is not None else None
 
 async def delete(
@@ -53,12 +53,12 @@ async def delete(
 ) -> int:
     if not any((id, username)):
         raise ValueError("Either id or username must be provided.")
-    
+
     stmt = _delete(UsersTable)
-    
+
     if id:
         stmt = stmt.where(UsersTable.id == id)
     else:
         stmt = stmt.where(UsersTable.username == username)
-        
+
     return await database.execute(stmt)

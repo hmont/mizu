@@ -1,8 +1,8 @@
 import os
 
-from dotenv import load_dotenv
-
 from urllib.parse import quote
+
+from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
