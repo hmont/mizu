@@ -14,6 +14,9 @@ uvicorn = "^0.34.2"
 sqlalchemy = "^2.0.40"
 databases = {extras = ["aiomysql"], version = "^0.9.0"}
 python-dotenv = "^1.1.0"
+jinja2 = "^3.1.6"
+bcrypt = "^4.3.0"
+redis = "^6.0.0"
 
 
 [build-system]

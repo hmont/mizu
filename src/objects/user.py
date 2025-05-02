@@ -19,7 +19,7 @@ class User(TypedDict):
 async def create(
     username: str,
     password_hash: str,
-    openai_api_key: str
+    openai_api_key: str = ""
 ) -> None:
     query = insert(UsersTable).values(
         username=username,
@@ -45,7 +45,7 @@ async def fetch_one(
         
     user = await database.fetch_one(stmt)
     
-    return cast(User, user)
+    return cast(User, user) if user is not None else None
 
 async def delete(
     id: Optional[int] = None,

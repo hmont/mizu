@@ -1,32 +1,35 @@
-import asyncio
+import uvicorn
 
-import time
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from state.services import database
+from fastapi.staticfiles import StaticFiles
 
-from sqlalchemy import select
+from utils import settings
 
-from models import user
+from state import services
 
-from objects.user import fetch_one, create, delete
-from objects.conversation import create as convocreate, fetch_one as convofetch
-from objects.message import create as createmsg
+from web.api import api_router
+from web import web_router
 
-async def main():
-    await database.connect()
-    await create("henry3", "a", "b")
-    await convocreate(1)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await services.database.connect()
+    yield
+    await services.database.disconnect()
+
+app = FastAPI(lifespan=lifespan)
+
+app.include_router(api_router)
+app.include_router(web_router)
+
+app.mount("/static", StaticFiles(directory="src/web/static/"), name="static")
     
-    # the = await delete(username="henry3")
-    # print(the)
-    
-    # the = await convofetch(1)
-    
-    await createmsg(conversation_id=1)
-    
-    print()
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    uvicorn.run(
+        "mizu:app",
+        host=settings.MIZU_HOST,
+        port=settings.MIZU_PORT,
+        workers=settings.MIZU_WORKERS
+    )

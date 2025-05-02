@@ -39,7 +39,7 @@ class Database:
         rec_id = await self._database.execute(query)
         return cast(int, rec_id)
         
-    async def fetch_one(self, query: Query) -> Optional[dict[str, Any]]:
+    async def fetch_one(self, query: Query) -> Optional[Row]:
         if isinstance(query, ClauseElement):
             query = self._compile(query)
             
