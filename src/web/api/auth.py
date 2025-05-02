@@ -2,12 +2,15 @@ import bcrypt
 
 import uuid
 
+import functools
+
 from fastapi import APIRouter
 from fastapi import Request
 from fastapi import Response
 
 from fastapi.responses import JSONResponse
 from fastapi.responses import PlainTextResponse
+from fastapi.responses import RedirectResponse
 
 from datetime import timedelta
 from datetime import datetime
@@ -21,12 +24,20 @@ from state.services import redis
 from state.services import templates
 
 from utils.auth import get_user
+from utils.auth import get_session_id
+from utils.auth import end_session
 
 router = APIRouter()
 
 @web_router.get("/test")
 async def test(request: Request):
-    user = await get_user(request)
+    
+    session_id = get_session_id(request)
+    
+    if session_id is None:
+        return PlainTextResponse("Not logged in")
+    
+    user = await get_user(session_id)
     
     if user is None:
         return PlainTextResponse("Not logged in")
@@ -35,13 +46,22 @@ async def test(request: Request):
     
 @web_router.get("/login")
 async def login(request: Request):
-    return templates.TemplateResponse(name="login.html", request=request)
+    session_id = get_session_id(request)
+    
+    if not session_id or not await get_user(session_id):
+        return templates.TemplateResponse(name="login.html", request=request)
+    
+    return RedirectResponse(url="/dashboard")
+
+@router.post("/logout")
+async def logout(request: Request):
+    return await end_session(request)
 
 @router.post("/auth")
 async def auth(request: Request, response: Response):
-    session_user = await get_user(request)
+    session_id = get_session_id(request)
     
-    if session_user is not None:
+    if session_id is not None:
         return JSONResponse(status_code=200,
                                 content={"message": "Already authenticated"})
     

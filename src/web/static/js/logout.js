@@ -1,19 +1,10 @@
-function submitForm() {
-    const usernameInput = document.querySelector("input#username-input");
-    const passwordInput = document.querySelector("input#password-input");
-
-    const body = {
-        "username": usernameInput.value,
-        "password": passwordInput.value
-    };
-
+function logout() {
     fetch(
-        '/api/auth', {
+        '/api/logout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(body)
         }
     )
     .then(response => {
@@ -24,7 +15,6 @@ function submitForm() {
     })
     .then(responseData => {
         alert(responseData.message)
-        window.location.href = "/dashboard";
     })
     .catch(error => {
         console.error('Error:', error);
