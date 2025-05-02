@@ -1,6 +1,6 @@
-import uvicorn
-
 from contextlib import asynccontextmanager
+
+import uvicorn
 
 from fastapi import FastAPI
 
@@ -25,7 +25,7 @@ app.include_router(api_router)
 app.include_router(web_router)
 
 app.mount("/static", StaticFiles(directory="src/web/static/"), name="static")
-    
+
 if __name__ == "__main__":
     uvicorn.run(
         "mizu:app",

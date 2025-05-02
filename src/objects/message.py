@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from typing import Optional
 from typing import TypedDict
+from typing import cast
 
 from sqlalchemy import insert
-
-from datetime import datetime
+from sqlalchemy import select
 
 from models.message import MessageTable
 
@@ -36,3 +38,12 @@ async def create(
     )
 
     await database.execute(stmt)
+
+async def fetch_one(
+    _id: int
+) -> Optional[Message]:
+    query = select(MessageTable).where(MessageTable.id == _id)
+
+    msg = await database.fetch_one(query)
+
+    return cast(Message, msg) if msg else None

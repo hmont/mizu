@@ -23,7 +23,8 @@ async def register(request: Request):
     pw_hashed = bcrypt.hashpw(password, bcrypt.gensalt()).decode()
 
     if await user.fetch_one(username=username) is not None:
-        return JSONResponse(status_code=200, content={"message": "User with that username already exists"})
+        return JSONResponse(status_code=200,
+                            content={"message": "User with that username already exists"})
 
     await user.create(
         username=username,
