@@ -1,6 +1,7 @@
 import functools
 
 from typing import Optional
+from typing import cast
 
 from fastapi import Request
 
@@ -12,6 +13,11 @@ from objects import user
 
 from state.services import redis
 
+class AuthenticatedRequest(Request):
+    def __init__(self, scope, receive, send):
+        super().__init__(scope, receive, send)
+        self.auth_user: Optional[User] = None
+
 def require_login(func):
     @functools.wraps(func)
     async def wrapper(*args, **kwargs):
@@ -20,10 +26,19 @@ def require_login(func):
         if request is None:
             return await func(*args, **kwargs)
 
+        if not isinstance(request, AuthenticatedRequest):
+            raise ValueError("Request type must be AuthenticatedRequest")
+
+        request = cast(AuthenticatedRequest, request)
+
         session_id = get_session_id(request)
 
-        if not session_id or not await get_user(session_id):
+        user = await get_user(session_id)
+
+        if not session_id or not user:
             return RedirectResponse("/login")
+
+        request.auth_user = user
 
         return await func(*args, **kwargs)
     return wrapper

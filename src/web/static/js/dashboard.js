@@ -1,7 +1,3 @@
-function onload() {
-    console.log("onload");
-}
-
 function logoutDashboard() {
     fetch(
         '/api/logout', {

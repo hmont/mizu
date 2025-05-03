@@ -1,6 +1,7 @@
 from typing import Optional
-from typing import TypedDict
 from typing import cast
+
+from typing_extensions import TypedDict
 
 from sqlalchemy import insert
 from sqlalchemy import select
